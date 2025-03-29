@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <mutex>
+#include <vector>
 #include <unordered_map>
 
 class EventBus {
@@ -16,7 +17,8 @@ public:
 
     void publish(const std::string& topic, const std::string& message) {
         std::lock_guard<std::mutex> lock(mutex_);
-        if (auto it = subscribers_.find(topic); it != subscribers_.end()) {
+        auto it = subscribers_.find(topic);
+        if (it != subscribers_.end()) {
             for (auto& handler : it->second) {
                 handler(message);
             }

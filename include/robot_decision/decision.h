@@ -8,7 +8,7 @@
 #include "action.h"
 #include "state_manager.h"
 #include "task_scheduler.h"
-#include "fault_hander.h"
+#include "fault_handler.h"
 
 class Decision {
 public:

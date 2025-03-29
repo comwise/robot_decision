@@ -26,6 +26,8 @@ public:
 
     const Metadata& getMetadata() const { return meta_; }
 
+    const std::string& id() const { return meta_.id; }
+
 private:
     Metadata meta_;
     std::function<void()> callback_;
