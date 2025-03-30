@@ -6,10 +6,18 @@
 #include <unordered_map>
 #include <algorithm>
 
+// 基于有向无环图实现
+// A->B C D
+// B->C D E
+// C->D
+// D->X
+// E->X
+// A->B->C->D->E
+// 循环依赖会出问题，需优化
 class DependencyGraph {
 public:
-    void addDependency(const std::string& from, const std::string& to) {
-        graph_[to].push_back(from);
+    void addDependency(const std::string& node, const std::string& depend) {
+        graph_[node].push_back(depend);
     }
 
     std::vector<std::string> topologicalSort() {
@@ -26,6 +34,7 @@ public:
     }
 
 private:
+   // depth first search深度优先搜索算法
     void dfs(const std::string& node, 
             std::unordered_map<std::string, bool>& visited,
             std::vector<std::string>& result) {

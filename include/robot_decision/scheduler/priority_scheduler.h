@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include "scheduler.h"
 #include "scheduler/task.h"
+#include "dependency_graph.h"
 
 // 显式定义的比较器类型（替代 Lambda）
 struct PriorityComparator {
@@ -25,7 +26,9 @@ public:
         std::lock_guard<std::mutex> lock(queue_mutex_);
         
         // 记录依赖关系
-        //dep_graph_.addDependency(task->task_id, task->dependencies);
+        for (auto &depend : task->dependencies) {
+            dep_graph_.addDependency(task->task_id, depend);
+        }
         
         // 插入优先队列
         task_queue_.push(std::move(task));
@@ -40,7 +43,7 @@ protected:
 
     bool has_available_task() const {
         //return !task_queue_.empty() && dep_graph_.isReady(task_queue_.top()->task_id);
-        return false;
+        return !task_queue_.empty();
     }
 
     std::shared_ptr<PriorityTask> select_next_task() {
@@ -62,6 +65,7 @@ protected:
 
 private:
     std::unordered_set<std::string> executing_tasks_;
+    DependencyGraph dep_graph_;
 };
 
 #endif // __COMWISE__ROBOT_DECISION__PRIORITY_SCHEDULER__H__

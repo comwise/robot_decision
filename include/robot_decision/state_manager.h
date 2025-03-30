@@ -9,26 +9,29 @@
 class StateManager {
 public:
     using State = State;
+    using StateHandler = std::function<void()>;
     
     StateManager() : current_state_(State::IDLE) {}
     
     void setState(State new_state) {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<std::mutex> lock(state_mtx_);
         last_state_ = current_state_;
         current_state_ = new_state;
         notifyStateChange();
     }
 
     State getState() const {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<std::mutex> lock(state_mtx_);
         return current_state_;
     }
 
-    void registerHandler(State state, std::function<void()> handler) {
+    void registerHandler(State state, StateHandler handler) {
+        std::lock_guard<std::mutex> lock(handler_mtx_);
         state_handlers_[state] = std::move(handler);
     }
 
     void unregisterHandler(State state) {
+        std::lock_guard<std::mutex> lock(handler_mtx_);
         auto cit = state_handlers_.find(state);
         if (cit != state_handlers_.end()) {
             state_handlers_.erase(cit);
@@ -46,8 +49,9 @@ private:
 private:
     State current_state_;
     State last_state_;
-    mutable std::mutex mutex_;
-    std::unordered_map<State, std::function<void()>> state_handlers_;
+    mutable std::mutex state_mtx_;
+    std::unordered_map<State, StateHandler> state_handlers_;
+    std::mutex handler_mtx_;
 };
 
 #endif // __COMWISE__ROBOT_DECISION__STATE_MANAGER__H__

@@ -45,9 +45,13 @@ protected:
         while (!stop_flag_) {
             auto task = this->dequeue_task();
             if (task) {
-                static_cast<Derived*>(this)->pre_execute(task);
-                task->execute();
-                static_cast<Derived*>(this)->post_execute(task);
+                try {
+                    static_cast<Derived*>(this)->pre_execute(task);
+                    task->execute();
+                    static_cast<Derived*>(this)->post_execute(task);
+                } catch (const std::exception& e) {
+                    //handle_task_error(task, e);
+                }
             }
         }
     }

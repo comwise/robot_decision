@@ -20,6 +20,13 @@ public:
         creators_[type] = creator;
     }
 
+    void unregisteredCreatorr(TaskType type) {
+        auto cit = creators_.find(type);
+        if (cit != creators_.end()) {
+            creators_.erase(cit);
+        }
+    }
+
     std::shared_ptr<Task> createTask(TaskType type) {
         auto it = creators_.find(type);
         if (it != creators_.end()) {
