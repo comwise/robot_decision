@@ -15,6 +15,7 @@ struct Task : public ITask {
     virtual void execute() override { }
     int task_type;
     std::string task_id;
+    std::string task_name;
 };
 
 // 优先级调度器实现（带优先级和依赖）
